@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-GROUPS=("${@:-core}")
+if (( $# == 0 )); then
+  GROUPS=(core)
+else
+  GROUPS=("$@")
+fi
 BIN_DIR="${AIFIX3R_BIN_DIR:-$HOME/.local/bin}"
 mkdir -p "$BIN_DIR"
+export PATH="$BIN_DIR:$HOME/go/bin:$PATH"
+
+FAILED=()
 
 log() { printf '[aifix3r] %s\n' "$*"; }
 has_group() { local wanted="$1"; for g in "${GROUPS[@]}"; do [[ "$g" == "$wanted" || "$g" == all ]] && return 0; done; return 1; }
@@ -13,9 +20,26 @@ install_apt() {
   sudo apt-get update
   sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "$@"
 }
-install_go() { command -v go >/dev/null || { log 'Go missing; install core first'; return 1; }; for p in "$@"; do log "go install $p"; GOBIN="$BIN_DIR" go install "$p"; done; }
-install_pipx() { command -v pipx >/dev/null || { log 'pipx missing; install core first'; return 1; }; for p in "$@"; do log "pipx install $p"; pipx install --force "$p" || log "warning: $p failed"; done; }
-install_cargo() { command -v cargo >/dev/null || { log 'cargo missing; skipping Rust tools'; return 0; }; for p in "$@"; do cargo install --locked "$p" || log "warning: $p failed"; done; }
+install_go() {
+  command -v go >/dev/null || { log 'Go missing; install core first'; FAILED+=(go); return 0; }
+  for p in "$@"; do
+    log "go install $p"
+    if ! GOBIN="$BIN_DIR" go install "$p"; then FAILED+=("$p"); log "warning: $p failed; continuing"; fi
+  done
+}
+install_pipx() {
+  command -v pipx >/dev/null || { log 'pipx missing; install core first'; FAILED+=(pipx); return 0; }
+  for p in "$@"; do
+    log "pipx install $p"
+    if ! pipx install --force "$p"; then FAILED+=("$p"); log "warning: $p failed; continuing"; fi
+  done
+}
+install_cargo() {
+  command -v cargo >/dev/null || { log 'cargo missing; skipping Rust tools'; FAILED+=(cargo); return 0; }
+  for p in "$@"; do
+    if ! cargo install --locked "$p"; then FAILED+=("$p"); log "warning: $p failed; continuing"; fi
+  done
+}
 
 if has_group core; then install_apt git curl wget jq tmux parallel build-essential python3 python3-pip pipx golang-go nmap cargo; fi
 if has_group recon; then
@@ -29,5 +53,8 @@ if has_group secrets; then install_go github.com/trufflesecurity/trufflehog/v3@l
 if has_group cloud; then install_pipx prowler scoutsuite cloud-enum; fi
 if has_group mobile; then install_pipx frida-tools objection; fi
 
-log "complete; add $BIN_DIR to PATH"
-
+log "complete; add $BIN_DIR and $HOME/go/bin to PATH"
+if (( ${#FAILED[@]} )); then
+  log "failed packages (${#FAILED[@]}): ${FAILED[*]}"
+  exit 2
+fi
