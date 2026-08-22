@@ -44,11 +44,12 @@ Requirements: Node.js 22.13 or newer.
 git clone https://github.com/kalon-xf/aifix3r.git
 cd aifix3r
 cp .env.example .env.local
+cp .openai/hosting.example.json .openai/hosting.json
 npm ci
 npm run dev
 ```
 
-Open the local URL shown in the terminal. Without an NVIDIA key, the planner returns a transparent, deterministic demo plan so the full user journey remains testable.
+The copied `hosting.json` is a local project identity file and is intentionally ignored by Git. Replace its placeholder only when attaching your own hosted Site.\n\nOpen the local URL shown in the terminal. Without an NVIDIA key, the planner returns a transparent, deterministic demo plan so the full user journey remains testable.
 
 ## NVIDIA configuration
 
