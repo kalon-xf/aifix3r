@@ -41,6 +41,27 @@ const tools: Tool[] = [
   { name: "ParamSpider", category: "URLs", tier: "Ultra", mode: "Passive", description: "Extract parameterized historical URLs for later validation.", output: "results/{{target}}.txt", command: "paramspider -d \"{{target}}\" --exclude woff,css,png,svg,jpg" },
   { name: "GF Patterns", category: "Validation", tier: "Core", mode: "Passive", description: "Classify collected URLs into manual review queues.", output: "review-candidates.txt", command: "gf xss archived-urls.txt | sort -u > review-candidates.txt" },
   { name: "Dalfox", category: "Validation", tier: "Ultra", mode: "Approval", description: "Discovery-only analysis of pre-approved reflected candidates.", output: "dalfox-discovery.txt", command: "dalfox file review-candidates.txt --only-discovery --skip-bav -o dalfox-discovery.txt" },
+  { name: "ShuffleDNS", category: "DNS", tier: "Ultra", mode: "Bounded", description: "Resolve approved names with controlled concurrency and trusted resolvers.", output: "shuffledns.txt", command: "shuffledns -d \"{{target}}\" -list assets.txt -r resolvers.txt -silent -o shuffledns.txt" },
+  { name: "AlterX", category: "Discovery", tier: "Ultra", mode: "Passive", description: "Generate reviewable subdomain permutations from known assets.", output: "permutations.txt", command: "alterx -l assets.txt -silent | sort -u > permutations.txt" },
+  { name: "Anew", category: "URLs", tier: "Core", mode: "Passive", description: "Append only unseen lines while combining discovery datasets.", output: "all-urls.txt", command: "cat archived-urls.txt crawl.txt 2>/dev/null | anew all-urls.txt" },
+  { name: "Unfurl", category: "URLs", tier: "Core", mode: "Passive", description: "Extract domains, paths, keys and values from collected URLs.", output: "parameter-keys.txt", command: "unfurl keys < all-urls.txt | sort -u > parameter-keys.txt" },
+  { name: "Qsreplace", category: "URLs", tier: "Core", mode: "Passive", description: "Normalize query values for offline deduplication and review.", output: "normalized-parameters.txt", command: "qsreplace FUZZ < all-urls.txt | sort -u > normalized-parameters.txt" },
+  { name: "Hakrawler", category: "URLs", tier: "Ultra", mode: "Approval", description: "Shallow crawl an approved web root with a strict depth.", output: "hakrawler.txt", command: "printf '%s\\n' \"https://{{target}}\" | hakrawler -depth 2 -plain > hakrawler.txt" },
+  { name: "GoSpider", category: "URLs", tier: "Ultra", mode: "Approval", description: "Collect same-site links from an approved target at low concurrency.", output: "gospider.txt", command: "gospider -s \"https://{{target}}\" -d 2 -c 2 --quiet > gospider.txt" },
+  { name: "FFUF", category: "Validation", tier: "Ultra", mode: "Approval", description: "Run bounded content discovery with an operator-supplied program-safe wordlist.", output: "ffuf.json", command: "ffuf -u \"https://{{target}}/FUZZ\" -w wordlist.txt -rate 5 -t 5 -mc all -fc 404 -of json -o ffuf.json" },
+  { name: "Gobuster", category: "Validation", tier: "Core", mode: "Approval", description: "Perform low-thread directory discovery where program rules permit it.", output: "gobuster.txt", command: "gobuster dir -u \"https://{{target}}\" -w wordlist.txt -t 5 --delay 200ms -o gobuster.txt" },
+  { name: "Feroxbuster", category: "Validation", tier: "Ultra", mode: "Approval", description: "Controlled recursive content inventory with fixed rate and depth.", output: "feroxbuster.txt", command: "feroxbuster -u \"https://{{target}}\" -w wordlist.txt --rate-limit 5 -t 5 -d 2 -o feroxbuster.txt" },
+  { name: "RustScan", category: "Exposure", tier: "Ultra", mode: "Approval", description: "Fast port visibility restricted to an approved host and explicit range.", output: "rustscan.txt", command: "rustscan -a \"{{target}}\" --range 1-1000 --ulimit 1000 -- -sV > rustscan.txt" },
+  { name: "Nmap", category: "Exposure", tier: "Core", mode: "Approval", description: "Service identification on an explicit small port set.", output: "nmap.txt", command: "nmap -sV -Pn -p 80,443,8080,8443 --max-rate 20 \"{{target}}\" -oN nmap.txt" },
+  { name: "Masscan", category: "Exposure", tier: "Ultra", mode: "Approval", description: "Rate-limited port visibility for explicitly approved infrastructure.", output: "masscan.txt", command: "masscan \"{{target}}\" -p80,443,8080,8443 --rate 20 -oL masscan.txt" },
+  { name: "KXSS", category: "Validation", tier: "Core", mode: "Passive", description: "Classify collected URLs that reflect supplied parameter values.", output: "kxss-candidates.txt", command: "kxss < normalized-parameters.txt > kxss-candidates.txt" },
+  { name: "Dirsearch", category: "Validation", tier: "Ultra", mode: "Approval", description: "Bounded path discovery using low threads and a reviewed wordlist.", output: "dirsearch.txt", command: "dirsearch -u \"https://{{target}}\" -w wordlist.txt -t 5 --max-rate 5 --format plain -o dirsearch.txt" },
+  { name: "GoWitness", category: "Web", tier: "Ultra", mode: "Bounded", description: "Capture screenshots of approved live web services for visual triage.", output: "screenshots/", command: "gowitness scan file -f web.txt --threads 2 --screenshot-path screenshots" },
+  { name: "TruffleHog", category: "Exposure", tier: "Ultra", mode: "Passive", description: "Review an authorized repository for verified secret exposure.", output: "trufflehog.jsonl", command: "trufflehog git \"https://github.com/OWNER/REPOSITORY.git\" --only-verified --json > trufflehog.jsonl" },
+  { name: "Gitleaks", category: "Exposure", tier: "Core", mode: "Passive", description: "Scan the current authorized repository without uploading source.", output: "gitleaks.json", command: "gitleaks git . --report-format json --report-path gitleaks.json" },
+  { name: "Semgrep", category: "Validation", tier: "Ultra", mode: "Passive", description: "Run reviewed static-analysis rules against owned source code.", output: "semgrep.json", command: "semgrep scan --config auto --json --output semgrep.json ." },
+  { name: "Nikto", category: "Validation", tier: "Core", mode: "Approval", description: "Conservative web-server checks on one explicitly approved host.", output: "nikto.txt", command: "nikto -h \"https://{{target}}\" -maxtime 10m -output nikto.txt" },
+  { name: "WhatWeb", category: "Web", tier: "Core", mode: "Bounded", description: "Identify web technologies with a non-aggressive profile.", output: "whatweb.json", command: "whatweb --aggression 1 --log-json whatweb.json \"https://{{target}}\"" },
 ];
 
 const categories = ["All", "Discovery", "DNS", "Web", "URLs", "Exposure", "Validation"] as const;
@@ -147,7 +168,7 @@ export function DiscoveryHub({ scope, setScope, onOpenTools }: ScopeProps & { on
   return <div className="page-stack cyber-page">
     <section className="cyber-hero">
       <div><span className="terminal-kicker">root@aifix3r:~/projects$ init</span><h2>Project discovery lab</h2><p>Turn an authorized program scope into a controlled recon workflow with passive-first discovery, bounded checks, and AI-ready evidence.</p></div>
-      <div className="threat-orbit" aria-hidden="true"><span /><span /><b>20</b><small>tool<br />templates</small></div>
+      <div className="threat-orbit" aria-hidden="true"><span /><span /><b>41</b><small>tool<br />templates</small></div>
     </section>
 
     <section className="discovery-layout">
@@ -160,7 +181,7 @@ export function DiscoveryHub({ scope, setScope, onOpenTools }: ScopeProps & { on
           <label><span>Discovery profile</span><select value={profile} onChange={(event) => { setProfile(event.target.value as ReconProfile); setScript(""); }}><option value="passive">Passive intelligence</option><option value="balanced">Balanced web recon</option><option value="deep">Deep approved review</option></select></label>
         </div>
         <label className="authorization-check"><input type="checkbox" checked={authorized} onChange={(event) => setAuthorized(event.target.checked)} /><span><strong>I confirm written authorization</strong>This target is in scope and I will apply the program&apos;s exclusions, rates, and prohibited-testing rules.</span></label>
-        <div className="project-actions"><button className="cyber-primary" onClick={generate} disabled={!authorized}>Generate workflow <span>↗</span></button><button className="cyber-secondary" onClick={onOpenTools}>Browse 20 tools</button></div>
+        <div className="project-actions"><button className="cyber-primary" onClick={generate} disabled={!authorized}>Generate workflow <span>↗</span></button><button className="cyber-secondary" onClick={onOpenTools}>Browse 41 tools</button></div>
         {message && <p className={`cyber-message ${script ? "success" : ""}`}>{message}</p>}
       </article>
 
