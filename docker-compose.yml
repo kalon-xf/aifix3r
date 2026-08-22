@@ -1,0 +1,9 @@
+services:
+  toolbox:
+    build: .
+    env_file: [.env]
+    volumes:
+      - ./data:/workspace/data
+      - ./output:/workspace/output
+    tty: true
+
