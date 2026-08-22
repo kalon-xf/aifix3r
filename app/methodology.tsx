@@ -67,6 +67,6 @@ export default function Methodology() {
       <div className={styles.packageGrid}>{packages.map((plan) => <article key={plan.name} className={plan.featured ? styles.featured : ""}><span>{plan.featured ? "MOST USEFUL" : "AIFIX3R"}</span><h4>{plan.name}</h4><strong>{plan.price}</strong><p>{plan.detail}</p>{plan.items.map((item) => <div key={item}>✓ {item}</div>)}<button>{plan.price === "Custom" ? "Contact sales" : "Select plan"}</button></article>)}</div>
     </section>
 
-    <section className={styles.credit}><strong>Source respect</strong><p>This module summarizes high-level concepts from publicly described CoffinXP/LostSec methodology. It does not reproduce their article, site design, paid content or wording. AIFix3r's workflows, safety controls and commercial structure are original.</p></section>
+    <section className={styles.credit}><strong>Source respect</strong><p>This module summarizes high-level concepts from publicly described CoffinXP/LostSec methodology. It does not reproduce their article, site design, paid content or wording. AIFix3r&apos;s workflows, safety controls and commercial structure are original.</p></section>
   </div>;
 }
