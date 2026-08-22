@@ -8,7 +8,7 @@ The interface is intentionally easy to operate: describe the goal, enter the aut
 
 - Responsive security operations dashboard
 - Cyber-style project discovery lab with program intake and scope validation
-- Searchable catalog of 20 discovery, DNS, web, URL, exposure, and validation tools
+- Searchable catalog of 41 discovery, DNS, web, URL, exposure, and validation tools
 - Copy-ready passive, balanced, and deep-review shell workflows
 - Operator, Ultra Hunter, and Team package previews
 - NVIDIA Nemotron mission planning with a deterministic safe-demo fallback
@@ -34,7 +34,7 @@ AiFix3r is designed to orchestrate established tools through isolated workers ra
 | Parameter review | Arjun, ParamSpider | Approved hosts and low concurrency |
 | Triage | AiFix3r/Nemotron | Evidence summaries for human review |
 
-The current catalog covers 20 tools, including Subfinder, Amass, Assetfinder, DNSx, MassDNS, CDNcheck, HTTPx, TLSx, Wappalyzer, GAU, Waybackurls, Katana, Uro, Naabu, Nuclei, Arjun, ParamSpider, GF patterns, Dalfox discovery mode, and authorized GitHub CLI search. No exploit execution, credential attacks, destructive testing, denial-of-service, persistence, or scope expansion is built into the product.
+The current catalog covers 41 tools, including Subfinder, Amass, Assetfinder, DNSx, MassDNS, CDNcheck, HTTPx, TLSx, Wappalyzer, GAU, Waybackurls, Katana, Uro, Naabu, Nuclei, Arjun, ParamSpider, GF patterns, Dalfox discovery mode, and authorized GitHub CLI search. No exploit execution, credential attacks, destructive testing, denial-of-service, persistence, or scope expansion is built into the product.
 
 ## Quick start
 
