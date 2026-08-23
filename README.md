@@ -12,6 +12,8 @@ The interface is intentionally easy to operate: describe the goal, enter the aut
 - Copy-ready passive, balanced, and deep-review shell workflows
 - Operator, Ultra Hunter, and Team package previews
 - NVIDIA Nemotron mission planning with a deterministic safe-demo fallback
+- SecurityOps workspace with guarded `--recon`, `--poc`, `--report`, and `--fix` modes
+- Local evidence processing with secret redaction; sensitive artifacts are not sent externally by default
 - Exact default model: `nvidia/nemotron-3-ultra-550b-a55b`
 - Server-side GitHub repository metadata connection
 - Authorization guard, scope confirmation, and human approval messaging
@@ -78,6 +80,7 @@ The browser submits only `owner/repository`. The server validates that format, c
 | --- | --- | --- |
 | `/api/ai/status` | GET | Model and configuration status, never the key |
 | `/api/ai/plan` | POST | Build a bounded, reviewable mission plan |
+| `/api/securityops` | POST | Process authorized recon, PoC, report, and fix workflows locally |
 | `/api/github/repository?repo=owner/name` | GET | Normalize repository metadata server-side |
 
 Example planner request:
