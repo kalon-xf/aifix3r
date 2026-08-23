@@ -116,6 +116,10 @@ npm run lint
 npm test
 ```
 
+## SecurityOps examples
+
+See [SecurityOps pipeline examples](docs/securityops-pipeline.md) for safe `--recon`, `--poc`, `--report`, and `--fix` inputs, plus guarded Nuclei and pull-request automation roadmaps.
+
 ## Responsible use
 
 Use AiFix3r only against systems you own or have explicit written permission to test. Program scope, exclusions, rate limits, and prohibited techniques always take precedence over a generated plan. Automated output is a lead, not proof of a vulnerability.
