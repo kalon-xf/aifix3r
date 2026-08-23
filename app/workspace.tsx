@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { DiscoveryHub, PlansAndModels, ToolLibrary } from "./security-suite";
 import Methodology from "./methodology";
+import SecurityOps from "./securityops";
 
-type View = "overview" | "discovery" | "methodology" | "toolbox" | "planner" | "missions" | "findings" | "plans" | "integrations";
+type View = "overview" | "discovery" | "methodology" | "securityops" | "toolbox" | "planner" | "missions" | "findings" | "plans" | "integrations";
 type MissionPlan = {
   summary: string;
   pipeline: string;
@@ -23,6 +24,7 @@ const navigation: Array<{ id: View; label: string; glyph: string }> = [
   { id: "overview", label: "Command center", glyph: "⌁" },
   { id: "discovery", label: "Project discovery", glyph: "◉" },
   { id: "methodology", label: "Field methodology", glyph: "▦" },
+  { id: "securityops", label: "SecurityOps AI", glyph: "✧" },
   { id: "toolbox", label: "Tool arsenal", glyph: "⌘" },
   { id: "planner", label: "AI mission planner", glyph: "✦" },
   { id: "missions", label: "Operations", glyph: "◎" },
@@ -114,6 +116,7 @@ export default function Workspace() {
         {view === "overview" && <Overview goal={goal} setGoal={setGoal} scope={scope} setScope={setScope} profile={profile} setProfile={setProfile} planning={planning} planError={planError} buildPlan={buildPlan} riskScore={riskScore} onView={navigate} />}
         {view === "discovery" && <DiscoveryHub scope={scope} setScope={setScope} onOpenTools={() => navigate("toolbox")} />}
         {view === "methodology" && <Methodology />}
+        {view === "securityops" && <SecurityOps />}
         {view === "toolbox" && <ToolLibrary scope={scope} setScope={setScope} />}
         {view === "planner" && <Planner goal={goal} setGoal={setGoal} scope={scope} setScope={setScope} profile={profile} setProfile={setProfile} planning={planning} planError={planError} buildPlan={buildPlan} plan={plan} aiStatus={aiStatus} />}
         {view === "missions" && <Missions />}
