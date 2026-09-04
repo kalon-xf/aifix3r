@@ -1,5 +1,13 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1788518419888,
+      "tag": "0000_omniscient_maximus",
+      "breakpoints": true
+    }
+  ]
 }

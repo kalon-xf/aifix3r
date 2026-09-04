@@ -9,8 +9,19 @@ failed=()
 log() { printf '[aifix3r-repair] %s\n' "$*"; }
 try() { local name="$1"; shift; log "installing $name"; if ! "$@"; then failed+=("$name"); log "FAILED: $name"; fi; }
 
-sudo apt-get update
-sudo DEBIAN_FRONTEND=noninteractive apt-get install -y git curl build-essential golang-go pipx cargo libssl-dev pkg-config
+run_root() {
+  if (( EUID == 0 )); then
+    "$@"
+  elif command -v sudo >/dev/null 2>&1; then
+    sudo "$@"
+  else
+    log "administrator privileges are required: $*"
+    return 1
+  fi
+}
+
+run_root apt-get update
+run_root env DEBIAN_FRONTEND=noninteractive apt-get install -y git curl build-essential golang-go pipx cargo libssl-dev pkg-config
 
 go_tool() { GOBIN="$BIN_DIR" go install "$1"; }
 pipx_tool() { pipx install --force "$1"; }
