@@ -1,4 +1,4 @@
-CREATE TABLE `assets` (
+CREATE TABLE `afx_assets` (
 	`id` text PRIMARY KEY NOT NULL,
 	`program_id` text NOT NULL,
 	`first_seen_job_id` text,
@@ -8,13 +8,13 @@ CREATE TABLE `assets` (
 	`last_seen_at` integer NOT NULL,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL,
-	FOREIGN KEY (`program_id`) REFERENCES `programs`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`first_seen_job_id`) REFERENCES `jobs`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`program_id`) REFERENCES `afx_programs`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`first_seen_job_id`) REFERENCES `afx_jobs`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `uidx_assets_program_type_value` ON `assets` (`program_id`,`type`,`value`);--> statement-breakpoint
-CREATE INDEX `idx_assets_program_last_seen` ON `assets` (`program_id`,`last_seen_at`);--> statement-breakpoint
-CREATE TABLE `evidence` (
+CREATE UNIQUE INDEX `uidx_assets_program_type_value` ON `afx_assets` (`program_id`,`type`,`value`);--> statement-breakpoint
+CREATE INDEX `idx_assets_program_last_seen` ON `afx_assets` (`program_id`,`last_seen_at`);--> statement-breakpoint
+CREATE TABLE `afx_evidence` (
 	`id` text PRIMARY KEY NOT NULL,
 	`finding_id` text NOT NULL,
 	`job_id` text,
@@ -24,23 +24,23 @@ CREATE TABLE `evidence` (
 	`redacted` integer DEFAULT true NOT NULL,
 	`created_by` text NOT NULL,
 	`created_at` integer NOT NULL,
-	FOREIGN KEY (`finding_id`) REFERENCES `findings`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`job_id`) REFERENCES `jobs`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`finding_id`) REFERENCES `afx_findings`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`job_id`) REFERENCES `afx_jobs`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE INDEX `idx_evidence_finding_created` ON `evidence` (`finding_id`,`created_at`);--> statement-breakpoint
-CREATE TABLE `finding_validations` (
+CREATE INDEX `idx_evidence_finding_created` ON `afx_evidence` (`finding_id`,`created_at`);--> statement-breakpoint
+CREATE TABLE `afx_finding_validations` (
 	`id` text PRIMARY KEY NOT NULL,
 	`finding_id` text NOT NULL,
 	`reviewer_id` text NOT NULL,
 	`decision` text NOT NULL,
 	`rationale` text NOT NULL,
 	`created_at` integer NOT NULL,
-	FOREIGN KEY (`finding_id`) REFERENCES `findings`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`finding_id`) REFERENCES `afx_findings`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE INDEX `idx_validations_finding_created` ON `finding_validations` (`finding_id`,`created_at`);--> statement-breakpoint
-CREATE TABLE `findings` (
+CREATE INDEX `idx_validations_finding_created` ON `afx_finding_validations` (`finding_id`,`created_at`);--> statement-breakpoint
+CREATE TABLE `afx_findings` (
 	`id` text PRIMARY KEY NOT NULL,
 	`program_id` text NOT NULL,
 	`asset_id` text,
@@ -57,13 +57,13 @@ CREATE TABLE `findings` (
 	`validated_at` integer,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL,
-	FOREIGN KEY (`program_id`) REFERENCES `programs`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`asset_id`) REFERENCES `assets`(`id`) ON UPDATE no action ON DELETE set null,
-	FOREIGN KEY (`source_job_id`) REFERENCES `jobs`(`id`) ON UPDATE no action ON DELETE set null
+	FOREIGN KEY (`program_id`) REFERENCES `afx_programs`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`asset_id`) REFERENCES `afx_assets`(`id`) ON UPDATE no action ON DELETE set null,
+	FOREIGN KEY (`source_job_id`) REFERENCES `afx_jobs`(`id`) ON UPDATE no action ON DELETE set null
 );
 --> statement-breakpoint
-CREATE INDEX `idx_findings_program_status_severity` ON `findings` (`program_id`,`status`,`severity`);--> statement-breakpoint
-CREATE TABLE `job_results` (
+CREATE INDEX `idx_findings_program_status_severity` ON `afx_findings` (`program_id`,`status`,`severity`);--> statement-breakpoint
+CREATE TABLE `afx_job_results` (
 	`id` text PRIMARY KEY NOT NULL,
 	`job_id` text NOT NULL,
 	`program_id` text NOT NULL,
@@ -72,14 +72,14 @@ CREATE TABLE `job_results` (
 	`normalized_json` text DEFAULT '{}' NOT NULL,
 	`searchable_text` text NOT NULL,
 	`created_at` integer NOT NULL,
-	FOREIGN KEY (`job_id`) REFERENCES `jobs`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`program_id`) REFERENCES `programs`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`job_id`) REFERENCES `afx_jobs`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`program_id`) REFERENCES `afx_programs`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `uidx_job_results_job_type_value` ON `job_results` (`job_id`,`result_type`,`value`);--> statement-breakpoint
-CREATE INDEX `idx_job_results_program_type` ON `job_results` (`program_id`,`result_type`);--> statement-breakpoint
-CREATE INDEX `idx_job_results_job` ON `job_results` (`job_id`);--> statement-breakpoint
-CREATE TABLE `jobs` (
+CREATE UNIQUE INDEX `uidx_job_results_job_type_value` ON `afx_job_results` (`job_id`,`result_type`,`value`);--> statement-breakpoint
+CREATE INDEX `idx_job_results_program_type` ON `afx_job_results` (`program_id`,`result_type`);--> statement-breakpoint
+CREATE INDEX `idx_job_results_job` ON `afx_job_results` (`job_id`);--> statement-breakpoint
+CREATE TABLE `afx_jobs` (
 	`id` text PRIMARY KEY NOT NULL,
 	`program_id` text NOT NULL,
 	`owner_id` text NOT NULL,
@@ -93,11 +93,11 @@ CREATE TABLE `jobs` (
 	`finished_at` integer,
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL,
-	FOREIGN KEY (`program_id`) REFERENCES `programs`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`program_id`) REFERENCES `afx_programs`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE INDEX `idx_jobs_program_status_created` ON `jobs` (`program_id`,`status`,`created_at`);--> statement-breakpoint
-CREATE TABLE `programs` (
+CREATE INDEX `idx_jobs_program_status_created` ON `afx_jobs` (`program_id`,`status`,`created_at`);--> statement-breakpoint
+CREATE TABLE `afx_programs` (
 	`id` text PRIMARY KEY NOT NULL,
 	`owner_id` text NOT NULL,
 	`name` text NOT NULL,
@@ -110,8 +110,8 @@ CREATE TABLE `programs` (
 	`updated_at` integer NOT NULL
 );
 --> statement-breakpoint
-CREATE INDEX `idx_programs_owner_status` ON `programs` (`owner_id`,`status`);--> statement-breakpoint
-CREATE TABLE `reports` (
+CREATE INDEX `idx_programs_owner_status` ON `afx_programs` (`owner_id`,`status`);--> statement-breakpoint
+CREATE TABLE `afx_reports` (
 	`id` text PRIMARY KEY NOT NULL,
 	`finding_id` text NOT NULL,
 	`platform` text NOT NULL,
@@ -119,11 +119,11 @@ CREATE TABLE `reports` (
 	`content` text NOT NULL,
 	`created_by` text NOT NULL,
 	`created_at` integer NOT NULL,
-	FOREIGN KEY (`finding_id`) REFERENCES `findings`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`finding_id`) REFERENCES `afx_findings`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE INDEX `idx_reports_finding_platform` ON `reports` (`finding_id`,`platform`);--> statement-breakpoint
-CREATE TABLE `scopes` (
+CREATE INDEX `idx_reports_finding_platform` ON `afx_reports` (`finding_id`,`platform`);--> statement-breakpoint
+CREATE TABLE `afx_scopes` (
 	`id` text PRIMARY KEY NOT NULL,
 	`program_id` text NOT NULL,
 	`kind` text NOT NULL,
@@ -131,10 +131,10 @@ CREATE TABLE `scopes` (
 	`decision` text NOT NULL,
 	`notes` text,
 	`created_at` integer NOT NULL,
-	FOREIGN KEY (`program_id`) REFERENCES `programs`(`id`) ON UPDATE no action ON DELETE cascade
+	FOREIGN KEY (`program_id`) REFERENCES `afx_programs`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `uidx_scopes_program_value_decision` ON `scopes` (`program_id`,`value`,`decision`);--> statement-breakpoint
-CREATE INDEX `idx_scopes_program_decision` ON `scopes` (`program_id`,`decision`);
+CREATE UNIQUE INDEX `uidx_scopes_program_value_decision` ON `afx_scopes` (`program_id`,`value`,`decision`);--> statement-breakpoint
+CREATE INDEX `idx_scopes_program_decision` ON `afx_scopes` (`program_id`,`decision`);
 --> statement-breakpoint
 PRAGMA optimize;

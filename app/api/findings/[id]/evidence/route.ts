@@ -11,10 +11,10 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     const kind = input.kind || "note", content = redactSecrets(input.content?.trim() || "");
     if (!KINDS.has(kind) || content.length < 2 || content.length > 100_000) return Response.json({ error: "Valid evidence kind and content are required." }, { status: 422 });
     const db = await getD1();
-    const finding = await db.prepare("SELECT f.id FROM findings f JOIN programs p ON p.id = f.program_id WHERE f.id = ? AND p.owner_id = ?").bind(id, actor).first();
+    const finding = await db.prepare("SELECT f.id FROM afx_findings f JOIN afx_programs p ON p.id = f.program_id WHERE f.id = ? AND p.owner_id = ?").bind(id, actor).first();
     if (!finding) return Response.json({ error: "Finding not found." }, { status: 404 });
     const evidence = { id: crypto.randomUUID(), findingId: id, jobId: input.jobId || null, kind, content, sha256: sha256(content), redacted: true, createdBy: actor, createdAt: Date.now() };
-    await db.prepare("INSERT INTO evidence (id, finding_id, job_id, kind, content, sha256, redacted, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)")
+    await db.prepare("INSERT INTO afx_evidence (id, finding_id, job_id, kind, content, sha256, redacted, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)")
       .bind(evidence.id, id, evidence.jobId, kind, content, evidence.sha256, actor, evidence.createdAt).run();
     return Response.json({ evidence }, { status: 201 });
   } catch (error) { return error instanceof SyntaxError ? Response.json({ error: "JSON required." }, { status: 400 }) : databaseError(error); }

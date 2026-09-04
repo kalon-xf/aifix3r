@@ -4,8 +4,8 @@
   "id": "1cfda57f-a0f0-4b3a-a75e-55075f3c1b84",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "assets": {
-      "name": "assets",
+    "afx_assets": {
+      "name": "afx_assets",
       "columns": {
         "id": {
           "name": "id",
@@ -92,10 +92,10 @@
         }
       },
       "foreignKeys": {
-        "assets_program_id_programs_id_fk": {
-          "name": "assets_program_id_programs_id_fk",
-          "tableFrom": "assets",
-          "tableTo": "programs",
+        "afx_assets_program_id_afx_programs_id_fk": {
+          "name": "afx_assets_program_id_afx_programs_id_fk",
+          "tableFrom": "afx_assets",
+          "tableTo": "afx_programs",
           "columnsFrom": [
             "program_id"
           ],
@@ -105,10 +105,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "assets_first_seen_job_id_jobs_id_fk": {
-          "name": "assets_first_seen_job_id_jobs_id_fk",
-          "tableFrom": "assets",
-          "tableTo": "jobs",
+        "afx_assets_first_seen_job_id_afx_jobs_id_fk": {
+          "name": "afx_assets_first_seen_job_id_afx_jobs_id_fk",
+          "tableFrom": "afx_assets",
+          "tableTo": "afx_jobs",
           "columnsFrom": [
             "first_seen_job_id"
           ],
@@ -123,8 +123,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "evidence": {
-      "name": "evidence",
+    "afx_evidence": {
+      "name": "afx_evidence",
       "columns": {
         "id": {
           "name": "id",
@@ -202,10 +202,10 @@
         }
       },
       "foreignKeys": {
-        "evidence_finding_id_findings_id_fk": {
-          "name": "evidence_finding_id_findings_id_fk",
-          "tableFrom": "evidence",
-          "tableTo": "findings",
+        "afx_evidence_finding_id_afx_findings_id_fk": {
+          "name": "afx_evidence_finding_id_afx_findings_id_fk",
+          "tableFrom": "afx_evidence",
+          "tableTo": "afx_findings",
           "columnsFrom": [
             "finding_id"
           ],
@@ -215,10 +215,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "evidence_job_id_jobs_id_fk": {
-          "name": "evidence_job_id_jobs_id_fk",
-          "tableFrom": "evidence",
-          "tableTo": "jobs",
+        "afx_evidence_job_id_afx_jobs_id_fk": {
+          "name": "afx_evidence_job_id_afx_jobs_id_fk",
+          "tableFrom": "afx_evidence",
+          "tableTo": "afx_jobs",
           "columnsFrom": [
             "job_id"
           ],
@@ -233,8 +233,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "finding_validations": {
-      "name": "finding_validations",
+    "afx_finding_validations": {
+      "name": "afx_finding_validations",
       "columns": {
         "id": {
           "name": "id",
@@ -290,10 +290,10 @@
         }
       },
       "foreignKeys": {
-        "finding_validations_finding_id_findings_id_fk": {
-          "name": "finding_validations_finding_id_findings_id_fk",
-          "tableFrom": "finding_validations",
-          "tableTo": "findings",
+        "afx_finding_validations_finding_id_afx_findings_id_fk": {
+          "name": "afx_finding_validations_finding_id_afx_findings_id_fk",
+          "tableFrom": "afx_finding_validations",
+          "tableTo": "afx_findings",
           "columnsFrom": [
             "finding_id"
           ],
@@ -308,8 +308,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "findings": {
-      "name": "findings",
+    "afx_findings": {
+      "name": "afx_findings",
       "columns": {
         "id": {
           "name": "id",
@@ -438,10 +438,10 @@
         }
       },
       "foreignKeys": {
-        "findings_program_id_programs_id_fk": {
-          "name": "findings_program_id_programs_id_fk",
-          "tableFrom": "findings",
-          "tableTo": "programs",
+        "afx_findings_program_id_afx_programs_id_fk": {
+          "name": "afx_findings_program_id_afx_programs_id_fk",
+          "tableFrom": "afx_findings",
+          "tableTo": "afx_programs",
           "columnsFrom": [
             "program_id"
           ],
@@ -451,10 +451,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "findings_asset_id_assets_id_fk": {
-          "name": "findings_asset_id_assets_id_fk",
-          "tableFrom": "findings",
-          "tableTo": "assets",
+        "afx_findings_asset_id_afx_assets_id_fk": {
+          "name": "afx_findings_asset_id_afx_assets_id_fk",
+          "tableFrom": "afx_findings",
+          "tableTo": "afx_assets",
           "columnsFrom": [
             "asset_id"
           ],
@@ -464,10 +464,10 @@
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "findings_source_job_id_jobs_id_fk": {
-          "name": "findings_source_job_id_jobs_id_fk",
-          "tableFrom": "findings",
-          "tableTo": "jobs",
+        "afx_findings_source_job_id_afx_jobs_id_fk": {
+          "name": "afx_findings_source_job_id_afx_jobs_id_fk",
+          "tableFrom": "afx_findings",
+          "tableTo": "afx_jobs",
           "columnsFrom": [
             "source_job_id"
           ],
@@ -482,8 +482,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "job_results": {
-      "name": "job_results",
+    "afx_job_results": {
+      "name": "afx_job_results",
       "columns": {
         "id": {
           "name": "id",
@@ -570,10 +570,10 @@
         }
       },
       "foreignKeys": {
-        "job_results_job_id_jobs_id_fk": {
-          "name": "job_results_job_id_jobs_id_fk",
-          "tableFrom": "job_results",
-          "tableTo": "jobs",
+        "afx_job_results_job_id_afx_jobs_id_fk": {
+          "name": "afx_job_results_job_id_afx_jobs_id_fk",
+          "tableFrom": "afx_job_results",
+          "tableTo": "afx_jobs",
           "columnsFrom": [
             "job_id"
           ],
@@ -583,10 +583,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "job_results_program_id_programs_id_fk": {
-          "name": "job_results_program_id_programs_id_fk",
-          "tableFrom": "job_results",
-          "tableTo": "programs",
+        "afx_job_results_program_id_afx_programs_id_fk": {
+          "name": "afx_job_results_program_id_afx_programs_id_fk",
+          "tableFrom": "afx_job_results",
+          "tableTo": "afx_programs",
           "columnsFrom": [
             "program_id"
           ],
@@ -601,8 +601,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "jobs": {
-      "name": "jobs",
+    "afx_jobs": {
+      "name": "afx_jobs",
       "columns": {
         "id": {
           "name": "id",
@@ -710,10 +710,10 @@
         }
       },
       "foreignKeys": {
-        "jobs_program_id_programs_id_fk": {
-          "name": "jobs_program_id_programs_id_fk",
-          "tableFrom": "jobs",
-          "tableTo": "programs",
+        "afx_jobs_program_id_afx_programs_id_fk": {
+          "name": "afx_jobs_program_id_afx_programs_id_fk",
+          "tableFrom": "afx_jobs",
+          "tableTo": "afx_programs",
           "columnsFrom": [
             "program_id"
           ],
@@ -728,8 +728,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "programs": {
-      "name": "programs",
+    "afx_programs": {
+      "name": "afx_programs",
       "columns": {
         "id": {
           "name": "id",
@@ -820,8 +820,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "reports": {
-      "name": "reports",
+    "afx_reports": {
+      "name": "afx_reports",
       "columns": {
         "id": {
           "name": "id",
@@ -885,10 +885,10 @@
         }
       },
       "foreignKeys": {
-        "reports_finding_id_findings_id_fk": {
-          "name": "reports_finding_id_findings_id_fk",
-          "tableFrom": "reports",
-          "tableTo": "findings",
+        "afx_reports_finding_id_afx_findings_id_fk": {
+          "name": "afx_reports_finding_id_afx_findings_id_fk",
+          "tableFrom": "afx_reports",
+          "tableTo": "afx_findings",
           "columnsFrom": [
             "finding_id"
           ],
@@ -903,8 +903,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "scopes": {
-      "name": "scopes",
+    "afx_scopes": {
+      "name": "afx_scopes",
       "columns": {
         "id": {
           "name": "id",
@@ -976,10 +976,10 @@
         }
       },
       "foreignKeys": {
-        "scopes_program_id_programs_id_fk": {
-          "name": "scopes_program_id_programs_id_fk",
-          "tableFrom": "scopes",
-          "tableTo": "programs",
+        "afx_scopes_program_id_afx_programs_id_fk": {
+          "name": "afx_scopes_program_id_afx_programs_id_fk",
+          "tableFrom": "afx_scopes",
+          "tableTo": "afx_programs",
           "columnsFrom": [
             "program_id"
           ],

@@ -5,7 +5,7 @@ const timestamps = {
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
 };
 
-export const programs = sqliteTable("programs", {
+export const programs = sqliteTable("afx_programs", {
   id: text("id").primaryKey(),
   ownerId: text("owner_id").notNull(),
   name: text("name").notNull(),
@@ -17,7 +17,7 @@ export const programs = sqliteTable("programs", {
   ...timestamps,
 }, (table) => [index("idx_programs_owner_status").on(table.ownerId, table.status)]);
 
-export const scopes = sqliteTable("scopes", {
+export const scopes = sqliteTable("afx_scopes", {
   id: text("id").primaryKey(),
   programId: text("program_id").notNull().references(() => programs.id, { onDelete: "cascade" }),
   kind: text("kind", { enum: ["domain", "wildcard", "url", "ip", "cidr"] }).notNull(),
@@ -30,7 +30,7 @@ export const scopes = sqliteTable("scopes", {
   index("idx_scopes_program_decision").on(table.programId, table.decision),
 ]);
 
-export const jobs = sqliteTable("jobs", {
+export const jobs = sqliteTable("afx_jobs", {
   id: text("id").primaryKey(),
   programId: text("program_id").notNull().references(() => programs.id, { onDelete: "cascade" }),
   ownerId: text("owner_id").notNull(),
@@ -45,7 +45,7 @@ export const jobs = sqliteTable("jobs", {
   ...timestamps,
 }, (table) => [index("idx_jobs_program_status_created").on(table.programId, table.status, table.createdAt)]);
 
-export const assets = sqliteTable("assets", {
+export const assets = sqliteTable("afx_assets", {
   id: text("id").primaryKey(),
   programId: text("program_id").notNull().references(() => programs.id, { onDelete: "cascade" }),
   firstSeenJobId: text("first_seen_job_id").references(() => jobs.id, { onDelete: "set null" }),
@@ -59,7 +59,7 @@ export const assets = sqliteTable("assets", {
   index("idx_assets_program_last_seen").on(table.programId, table.lastSeenAt),
 ]);
 
-export const jobResults = sqliteTable("job_results", {
+export const jobResults = sqliteTable("afx_job_results", {
   id: text("id").primaryKey(),
   jobId: text("job_id").notNull().references(() => jobs.id, { onDelete: "cascade" }),
   programId: text("program_id").notNull().references(() => programs.id, { onDelete: "cascade" }),
@@ -74,7 +74,7 @@ export const jobResults = sqliteTable("job_results", {
   index("idx_job_results_job").on(table.jobId),
 ]);
 
-export const findings = sqliteTable("findings", {
+export const findings = sqliteTable("afx_findings", {
   id: text("id").primaryKey(),
   programId: text("program_id").notNull().references(() => programs.id, { onDelete: "cascade" }),
   assetId: text("asset_id").references(() => assets.id, { onDelete: "set null" }),
@@ -92,7 +92,7 @@ export const findings = sqliteTable("findings", {
   ...timestamps,
 }, (table) => [index("idx_findings_program_status_severity").on(table.programId, table.status, table.severity)]);
 
-export const evidence = sqliteTable("evidence", {
+export const evidence = sqliteTable("afx_evidence", {
   id: text("id").primaryKey(),
   findingId: text("finding_id").notNull().references(() => findings.id, { onDelete: "cascade" }),
   jobId: text("job_id").references(() => jobs.id, { onDelete: "set null" }),
@@ -104,7 +104,7 @@ export const evidence = sqliteTable("evidence", {
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
 }, (table) => [index("idx_evidence_finding_created").on(table.findingId, table.createdAt)]);
 
-export const findingValidations = sqliteTable("finding_validations", {
+export const findingValidations = sqliteTable("afx_finding_validations", {
   id: text("id").primaryKey(),
   findingId: text("finding_id").notNull().references(() => findings.id, { onDelete: "cascade" }),
   reviewerId: text("reviewer_id").notNull(),
@@ -113,7 +113,7 @@ export const findingValidations = sqliteTable("finding_validations", {
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
 }, (table) => [index("idx_validations_finding_created").on(table.findingId, table.createdAt)]);
 
-export const reports = sqliteTable("reports", {
+export const reports = sqliteTable("afx_reports", {
   id: text("id").primaryKey(),
   findingId: text("finding_id").notNull().references(() => findings.id, { onDelete: "cascade" }),
   platform: text("platform", { enum: ["hackerone", "bugcrowd"] }).notNull(),

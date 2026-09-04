@@ -7,7 +7,7 @@ const PLATFORMS = new Set(["hackerone", "bugcrowd", "private", "lab"]);
 export async function GET(request: Request) {
   const actor = requireActor(request); if (actor instanceof Response) return actor;
   try {
-    const result = await (await getD1()).prepare("SELECT * FROM programs WHERE owner_id = ? ORDER BY updated_at DESC LIMIT 100").bind(actor).all();
+    const result = await (await getD1()).prepare("SELECT * FROM afx_programs WHERE owner_id = ? ORDER BY updated_at DESC LIMIT 100").bind(actor).all();
     return Response.json({ programs: result.results });
   } catch (error) { return databaseError(error); }
 }
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     const now = Date.now(), id = crypto.randomUUID();
     const rate = Math.min(50, Math.max(1, Math.trunc(input.rateLimit || 5)));
     const concurrency = Math.min(8, Math.max(1, Math.trunc(input.concurrency || 2)));
-    await (await getD1()).prepare("INSERT INTO programs (id, owner_id, name, platform, authorization_ref, rate_limit, concurrency, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?)")
+    await (await getD1()).prepare("INSERT INTO afx_programs (id, owner_id, name, platform, authorization_ref, rate_limit, concurrency, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?)")
       .bind(id, actor, name, platform, authorizationRef, rate, concurrency, now, now).run();
     return Response.json({ program: { id, ownerId: actor, name, platform, authorizationRef, rateLimit: rate, concurrency, status: "draft", createdAt: now, updatedAt: now } }, { status: 201 });
   } catch (error) { return error instanceof SyntaxError ? Response.json({ error: "JSON required." }, { status: 400 }) : databaseError(error); }
