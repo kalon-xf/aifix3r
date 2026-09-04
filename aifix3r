@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+project_root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$project_root"
+
+usage() {
+  cat <<'EOF'
+AiFix3r command center
+
+Usage: ./aifix3r <command>
+
+  install          Install web dependencies and create local configuration
+  dev              Start the local development dashboard
+  build            Build the production dashboard
+  start            Start the previously built production dashboard
+  test             Run lint, build, and rendered-page tests
+  doctor           Check the application environment and security tools
+  tools [groups]   Install optional tool groups (core/recon/web/vuln/secrets/all)
+  docker-up        Build and start the dashboard with Docker Compose
+  docker-down      Stop the Docker Compose dashboard
+EOF
+}
+
+require_node() {
+  command -v node >/dev/null 2>&1 || { echo "ERROR: Node.js 22.13+ is required." >&2; exit 69; }
+  node -e 'const [a,b]=process.versions.node.split(".").map(Number); if(a<22||(a===22&&b<13)) process.exit(1)' || {
+    echo "ERROR: Node.js 22.13+ is required; found $(node --version)." >&2
+    exit 69
+  }
+  command -v npm >/dev/null 2>&1 || { echo "ERROR: npm is required." >&2; exit 69; }
+}
+
+install_app() {
+  require_node
+  [[ -f .env.local ]] || cp .env.example .env.local
+  npm ci
+  echo "AiFix3r installed. Run: ./aifix3r dev"
+}
+
+doctor() {
+  local failures=0
+  printf 'AiFix3r doctor\n\n'
+  for command_name in git node npm; do
+    if command -v "$command_name" >/dev/null 2>&1; then
+      printf 'OK       %s\n' "$command_name"
+    else
+      printf 'MISSING  %s\n' "$command_name"
+      failures=$((failures + 1))
+    fi
+  done
+  [[ -f .env.local ]] && printf 'OK       .env.local\n' || printf 'OPTIONAL .env.local (created by install)\n'
+  [[ -d node_modules ]] && printf 'OK       web dependencies\n' || { printf 'MISSING  web dependencies (run ./aifix3r install)\n'; failures=$((failures + 1)); }
+  printf '\nDisk: '
+  df -h "$project_root" | awk 'NR==2 {print $4 " available (" $5 " used)"}'
+  printf '\nOptional security tools\n'
+  bash scripts/verify-tools.sh || true
+  (( failures == 0 )) || exit 2
+}
+
+command_name="${1:-help}"
+shift || true
+case "$command_name" in
+  install) install_app ;;
+  dev) require_node; [[ -d node_modules ]] || install_app; exec npm run dev -- "$@" ;;
+  build) require_node; [[ -d node_modules ]] || install_app; exec npm run build ;;
+  start) require_node; [[ -d dist ]] || { echo "Production build missing; run ./aifix3r build first." >&2; exit 66; }; exec npm start -- "$@" ;;
+  test) require_node; [[ -d node_modules ]] || install_app; npm run lint && npm test ;;
+  doctor) doctor ;;
+  tools)
+    (( $# > 0 )) || set -- core
+    exec bash scripts/install-tools.sh "$@"
+    ;;
+  docker-up) command -v docker >/dev/null 2>&1 || { echo "ERROR: Docker is not installed." >&2; exit 69; }; exec docker compose up --build -d web ;;
+  docker-down) command -v docker >/dev/null 2>&1 || { echo "ERROR: Docker is not installed." >&2; exit 69; }; exec docker compose down ;;
+  help|-h|--help) usage ;;
+  *) echo "Unknown command: $command_name" >&2; usage >&2; exit 64 ;;
+esac

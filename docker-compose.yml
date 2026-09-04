@@ -1,9 +1,22 @@
 services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    env_file:
+      - path: .env.local
+        required: false
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
   toolbox:
+    profiles: ["tools"]
     build: .
-    env_file: [.env]
+    env_file:
+      - path: .env.local
+        required: false
     volumes:
       - ./data:/workspace/data
       - ./output:/workspace/output
     tty: true
-

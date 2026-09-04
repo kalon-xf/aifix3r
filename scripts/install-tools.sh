@@ -2,9 +2,9 @@
 set -Eeuo pipefail
 
 if (( $# == 0 )); then
-  GROUPS=(core)
+  INSTALL_GROUPS=(core)
 else
-  GROUPS=("$@")
+  INSTALL_GROUPS=("$@")
 fi
 BIN_DIR="${AIFIX3R_BIN_DIR:-$HOME/.local/bin}"
 mkdir -p "$BIN_DIR"
@@ -13,12 +13,23 @@ export PATH="$BIN_DIR:$HOME/go/bin:$PATH"
 FAILED=()
 
 log() { printf '[aifix3r] %s\n' "$*"; }
-has_group() { local wanted="$1"; for g in "${GROUPS[@]}"; do [[ "$g" == "$wanted" || "$g" == all ]] && return 0; done; return 1; }
+has_group() { local wanted="$1"; for g in "${INSTALL_GROUPS[@]}"; do [[ "$g" == "$wanted" || "$g" == all ]] && return 0; done; return 1; }
+
+run_root() {
+  if (( EUID == 0 )); then
+    "$@"
+  elif command -v sudo >/dev/null 2>&1; then
+    sudo "$@"
+  else
+    log "administrator privileges are required: $*"
+    return 1
+  fi
+}
 
 install_apt() {
   command -v apt-get >/dev/null || return 0
-  sudo apt-get update
-  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "$@"
+  run_root apt-get update
+  run_root env DEBIAN_FRONTEND=noninteractive apt-get install -y "$@"
 }
 install_go() {
   command -v go >/dev/null || { log 'Go missing; install core first'; FAILED+=(go); return 0; }
