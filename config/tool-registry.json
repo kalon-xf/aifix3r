@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "tools": {
+    "subfinder": {
+      "version": "2.8.0",
+      "versionArgs": ["-version"],
+      "binary": "subfinder",
+      "category": "recon",
+      "risk": "passive",
+      "timeoutSeconds": 300,
+      "args": ["-d", "{{host}}", "-silent", "-json"]
+    },
+    "httpx": {
+      "version": "1.7.1",
+      "versionArgs": ["-version"],
+      "binary": "httpx",
+      "category": "recon",
+      "risk": "bounded-active",
+      "timeoutSeconds": 300,
+      "args": ["-u", "{{url}}", "-silent", "-json", "-rl", "{{rate}}", "-timeout", "10", "-retries", "1"]
+    },
+    "naabu": {
+      "version": "2.3.5",
+      "versionArgs": ["-version"],
+      "binary": "naabu",
+      "category": "service-discovery",
+      "risk": "bounded-active",
+      "timeoutSeconds": 300,
+      "args": ["-host", "{{host}}", "-json", "-rate", "{{rate}}", "-top-ports", "100", "-retries", "1"]
+    },
+    "katana": {
+      "version": "1.2.2",
+      "versionArgs": ["-version"],
+      "binary": "katana",
+      "category": "crawling",
+      "risk": "bounded-active",
+      "timeoutSeconds": 600,
+      "args": ["-u", "{{url}}", "-jsonl", "-d", "2", "-rl", "{{rate}}", "-timeout", "10", "-retry", "1"]
+    },
+    "nuclei": {
+      "version": "3.4.10",
+      "versionArgs": ["-version"],
+      "binary": "nuclei",
+      "category": "validation",
+      "risk": "human-approved-validation",
+      "timeoutSeconds": 900,
+      "args": ["-u", "{{url}}", "-jsonl", "-rl", "{{rate}}", "-timeout", "10", "-retries", "1", "-etags", "dos,fuzz,bruteforce,intrusive", "-disable-unsigned-templates", "-duc"]
+    },
+    "dalfox": {
+      "version": "2.12.0",
+      "versionArgs": ["version"],
+      "binary": "dalfox",
+      "category": "validation",
+      "risk": "human-approved-validation",
+      "timeoutSeconds": 600,
+      "args": ["url", "{{url}}", "--format", "json", "--silence", "--skip-bav", "--worker", "1"]
+    },
+    "sqlmap": {
+      "version": "1.9.8",
+      "versionArgs": ["--version"],
+      "binary": "sqlmap",
+      "category": "validation",
+      "risk": "human-approved-validation",
+      "timeoutSeconds": 900,
+      "args": ["-u", "{{url}}", "--batch", "--level", "1", "--risk", "1", "--threads", "1", "--timeout", "10", "--retries", "1", "--smart", "--output-dir", "{{outputDir}}"]
+    }
+  }
+}

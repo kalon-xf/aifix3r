@@ -51,7 +51,9 @@ cd aifix3r
 
 Run `./aifix3r doctor` whenever installation or tool execution fails. Optional
 security tools are installed separately so the dashboard remains quick and
-reliable: `./aifix3r tools recon web vuln`. Docker users can instead run
+reliable: `./aifix3r tools core runtime`. Start guarded execution with a long
+`AIFIX3R_WORKER_TOKEN` in `.env.local`, then run
+`./aifix3r worker`. Docker users can instead run
 `./aifix3r docker-up` and open `http://localhost:3000`.
 
 The copied `hosting.json` is a local project identity file and is intentionally ignored by Git. Replace its placeholder only when attaching your own hosted Site.\n\nOpen the local URL shown in the terminal. Without an NVIDIA key, the planner returns a transparent, deterministic demo plan so the full user journey remains testable.
@@ -122,6 +124,32 @@ npm test
 ## SecurityOps examples
 
 See [SecurityOps pipeline examples](docs/securityops-pipeline.md) for safe `--recon`, `--poc`, `--report`, and `--fix` inputs, plus guarded Nuclei and pull-request automation roadmaps.
+
+## Controlled local execution
+
+The hosted application stores programs, scope rules, jobs, assets, normalized
+results, findings, evidence, validation decisions, and reports in D1. Security
+tools run only in the separate local worker; Cloudflare never launches Kali
+binaries.
+
+```bash
+./aifix3r install
+./aifix3r tools core runtime
+./aifix3r worker
+# In another terminal
+./aifix3r dev
+```
+
+Open SecurityOps and use the **Authorized worker console** to create a program,
+add include/exclude scope, queue an allowlisted job, sync normalized results,
+review finding candidates, record a human decision, and download a HackerOne or
+Bugcrowd Markdown report. Nuclei, Dalfox, and SQLmap require explicit validation
+approval. The worker binds to `127.0.0.1` by default, uses a generated bearer
+token, never invokes a shell, limits concurrency and output, enforces URL/domain/
+wildcard/IP/CIDR scope, and supports timeouts and cancellation.
+
+The operational runtime set is pinned in `config/tool-registry.json`. Run
+`./aifix3r worker-doctor` after upgrades to verify installed versions.
 
 ## Responsible use
 

@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+setTimeout(() => {
+  process.stdout.write('{"url":"https://example.com","status_code":200}\n');
+}, 10_000);

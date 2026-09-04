@@ -16,7 +16,9 @@ Usage: ./aifix3r <command>
   start            Start the previously built production dashboard
   test             Run lint, build, and rendered-page tests
   doctor           Check the application environment and security tools
-  tools [groups]   Install optional tool groups (core/recon/web/vuln/secrets/all)
+  tools [groups]   Install optional tool groups (core/runtime/recon/web/vuln/secrets/all)
+  worker           Start the authenticated local execution worker
+  worker-doctor    Verify pinned execution-tool versions
   docker-up        Build and start the dashboard with Docker Compose
   docker-down      Stop the Docker Compose dashboard
 EOF
@@ -34,6 +36,7 @@ require_node() {
 install_app() {
   require_node
   [[ -f .env.local ]] || cp .env.example .env.local
+  node scripts/configure-local.mjs
   npm ci
   echo "AiFix3r installed. Run: ./aifix3r dev"
 }
@@ -71,6 +74,11 @@ case "$command_name" in
     (( $# > 0 )) || set -- core
     exec bash scripts/install-tools.sh "$@"
     ;;
+  worker)
+    [[ -f .env.local ]] || { echo "ERROR: Run ./aifix3r install and configure .env.local first." >&2; exit 78; }
+    exec node --env-file=.env.local local-worker/server.mjs
+    ;;
+  worker-doctor) exec node scripts/verify-runtime-tools.mjs ;;
   docker-up) command -v docker >/dev/null 2>&1 || { echo "ERROR: Docker is not installed." >&2; exit 69; }; exec docker compose up --build -d web ;;
   docker-down) command -v docker >/dev/null 2>&1 || { echo "ERROR: Docker is not installed." >&2; exit 69; }; exec docker compose down ;;
   help|-h|--help) usage ;;

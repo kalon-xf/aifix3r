@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+printf '{"host":"api.example.com","ip":"192.0.2.10"}\n'
